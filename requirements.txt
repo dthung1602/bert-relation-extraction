@@ -1,0 +1,5 @@
+pandas==1.0.5
+torch==1.5.1
+transformers==3.0.1
+pytorch-lightning==0.8.4
+test-tube==0.7.5
