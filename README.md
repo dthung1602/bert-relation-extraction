@@ -15,18 +15,18 @@ Used datasets:
 
 This project uses [Python 3.7](https://www.python.org/downloads/release/python-378/)
 
-Clone this [repository](https://github.com/dthung1602/bert-relation-extraction):
+Clone this repository
 ``` shell script
 git clone https://github.com/dthung1602/bert-relation-extraction
 ```
 
-Create a conda virtual env with:
+Create a `conda` virtual env with:
 ```shell script
 conda create --name bert-re python=3.7
 conda activate bert-re
 ```
 
-Or if you use virtualenv:
+Or if you use `virtualenv`:
 ```shell script
 virtualenv -p python3.7 venv
 source venv/bin/activate
@@ -51,9 +51,12 @@ optional arguments:
   --datasets [dataset1 [ds2 ...]]       List of datasets to download
                                         Available datasets:
                                             - SemiEval2010Task8
+                                            - GIDS
                                         If not specified, all datasets are downloaded
   --force-redownload                    Force re-download       
 ```
+
+Datasets are downloaded to directory `data/raw`
 
 ### Preprocess data
 ``` shell script
@@ -75,6 +78,8 @@ optional arguments:
                                             - roberta-base
                                         Default: distilbert-base-cased
 ```
+
+Processed data are stored in directory `data/processed`
 
 ### Code style
 All the code follows the [PEP8](https://www.python.org/dev/peps/pep-0008/) style guide.
