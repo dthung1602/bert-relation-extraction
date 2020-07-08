@@ -5,4 +5,4 @@ scikit-learn==0.23.1
 pytorch-lightning==0.8.4
 torch==1.5.1
 transformers==3.0.2
-test-tube==0.7.5
+gdown==3.11.1
