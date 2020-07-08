@@ -6,3 +6,5 @@ pytorch-lightning==0.8.4
 torch==1.5.1
 transformers==3.0.2
 gdown==3.11.1
+sklearn==0.0
+tqdm==4.47.0

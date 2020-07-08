@@ -3,12 +3,14 @@ import os
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from tqdm import tqdm
 
 from downloaders import RAW_DATA_DIR
-from .AbstractPreprocessor import AbstractPreprocessor, DATA_DIR
+from .AbstractPreprocessor import AbstractPreprocessor
 
 
 class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
+    PROCESSED_FILE_NAME = 'semieval_2010'
     RAW_TRAIN_FILE_NAME = os.path.join(RAW_DATA_DIR,
                                        'SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT')
     RAW_TEST_FILE_NAME = os.path.join(RAW_DATA_DIR,
@@ -46,20 +48,13 @@ class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
             random_state=self.RANDOM_SEED
         )
 
-        lc = locals()
-        for key in ['train', 'val', 'test']:
-            data = {
-                'x': lc[f'{key}_x'],
-                'y': lc[f'{key}_y'],
-            }
-            file_name = os.path.join(DATA_DIR, f'semieval_2010_{key}.pkl')
-            self._pickle_data(data, file_name)
+        self._pickle_data(train_x, train_y, val_x, val_y, test_x, test_y)
 
     def _get_data_from_file(self, file_name: str, dataset_size: int):
         sentences = []
         labels = []
         with open(file_name) as f:
-            for i in range(dataset_size):
+            for _ in tqdm(range(dataset_size)):
                 sentences.append(self._process_sentence(f.readline()))
                 labels.append(self._process_label(f.readline()))
                 f.readline()
@@ -67,11 +62,14 @@ class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
         return np.array(sentences), np.array(labels)
 
     def _process_sentence(self, sentence: str):
+        # TODO distinguish e1 e2 sub obj
         sentence = sentence.split("\t")[1][1:-2] \
-            .replace("<e1>", "[").replace("</e1>", "]") \
-            .replace("<e2>", "{").replace("</e2>", "}")
+            .replace("<e1>", self.SUB_START_CHAR) \
+            .replace("</e1>", self.SUB_END_CHAR) \
+            .replace("<e2>", self.OBJ_START_CHAR) \
+            .replace("</e2>", self.OBJ_END_CHAR)
         sequence = self.tokenizer.encode(sentence)
-        return self._pad_sequence(sequence, 0, 512)
+        return self._pad_sequence(sequence)
 
     def _process_label(self, label: str):
         return label[:-8]

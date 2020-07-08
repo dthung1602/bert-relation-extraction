@@ -1,6 +1,7 @@
 from transformers import BertTokenizer, DistilBertTokenizer, RobertaTokenizer
 
 from .AbstractPreprocessor import AbstractPreprocessor
+from .GIDSPreprocessor import GIDSPreprocessor
 from .SemiEval2010Task8Preprocessor import SemiEval2010Task8Preprocessor
 
 
@@ -12,7 +13,8 @@ class PreprocessorFactory:
     }
 
     DATASET_MAPPING = {
-        'SemiEval2010Task8': SemiEval2010Task8Preprocessor
+        'SemiEval2010Task8': SemiEval2010Task8Preprocessor,
+        'GIDS': GIDSPreprocessor,
     }
 
     def get_preprocessor(self, dataset: str, pretrain_weight: str) -> AbstractPreprocessor:
