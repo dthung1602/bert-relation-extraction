@@ -4,11 +4,12 @@ The goal of this repo is to show how to use [BERT](https://arxiv.org/abs/1810.04
 to [extract relation](https://en.wikipedia.org/wiki/Relationship_extraction) from text.
 
 Used libraries:
-- [PyTorch-Lightning](https://pytorch-lightning.readthedocs.io/en/latest/)
 - [Transformers](https://huggingface.co/transformers/index.html)
+- [PyTorch-Lightning](https://pytorch-lightning.readthedocs.io/en/latest/)
 
 Used datasets:
-- [SemiEval 2010 Task 8](http://semeval2.fbk.eu/semeval2.php?location=tasks&taskid=11)
+- SemiEval 2010 Task 8 - [paper](https://arxiv.org/pdf/1911.10422.pdf) - [download](https://github.com/sahitya0000/Relation-Classification/blob/master/corpus/SemEval2010_task8_all_data.zip?raw=true)
+-  Google IISc Distant Supervision (GIDS) - [paper](https://arxiv.org/pdf/1804.06987.pdf) - [download](https://drive.google.com/open?id=1gTNAbv8My2QDmP-OHLFtJFlzPDoCG4aI)
 
 ## Setup
 
@@ -40,7 +41,7 @@ pip install -r requirements.txt
 
 ### Download datasets
 ``` shell script
-python download.py
+python main.py download
 ```
 
 Available arguments:
@@ -49,29 +50,29 @@ optional arguments:
   -h, --help                            Show this help message and exit
   --datasets [dataset1 [ds2 ...]]       List of datasets to download
                                         Available datasets:
-                                            SemiEval2010Task8
+                                            - SemiEval2010Task8
                                         If not specified, all datasets are downloaded
   --force-redownload                    Force re-download       
 ```
 
 ### Preprocess data
 ``` shell script
-python preprocess.py
+python main.py preprocess
 ```
 
 Available arguments:
 ```text
 optional arguments:
   -h, --help                            Show this help message and exit
-  --preprocessor preprocessor_name      Preprocessor to run
-                                        Available preprocessors:
-                                            SemiEval2010Task8
+  --dataset dataset_name                Dataset to process
+                                        Available datasets:
+                                            - SemiEval2010Task8
                                         Default: SemiEval2010Task8
   --pretrain-weight pretrain_weight     Which pretrain weight to use
                                         Available pretrain weights: 
-                                            distilbert-base-cased
-                                            bert-base-uncased
-                                            roberta-base
+                                            - distilbert-base-cased
+                                            - bert-base-uncased
+                                            - roberta-base
                                         Default: distilbert-base-cased
 ```
 
