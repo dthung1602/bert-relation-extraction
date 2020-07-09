@@ -11,6 +11,7 @@ from .AbstractPreprocessor import AbstractPreprocessor
 
 class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
     PROCESSED_FILE_NAME = 'semieval_2010'
+    DATASET_NAME = 'SemiEval2010Task8'
     RAW_TRAIN_FILE_NAME = os.path.join(RAW_DATA_DIR,
                                        'SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT')
     RAW_TEST_FILE_NAME = os.path.join(RAW_DATA_DIR,
@@ -20,9 +21,7 @@ class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
     RANDOM_SEED = 2020
     VAL_DATA_PROPORTION = 0.2
 
-    def preprocess_data(self):
-        print("\n---> Preprocessing SemEval2010 dataset <---")
-
+    def _preprocess_data(self):
         print("Processing training data")
         train_x, train_y = self._get_data_from_file(
             self.RAW_TRAIN_FILE_NAME,

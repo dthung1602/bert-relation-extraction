@@ -33,3 +33,5 @@ class PreprocessorFactory:
                             choices=all_preprocessors, help="Dataset to process")
         parser.add_argument("--pretrain-weight", type=str, default='distilbert-base-cased',
                             choices=all_pretrain_weights, help="Which pretrain weights to use")
+        parser.add_argument("--reprocess", default=False, action="store_true",
+                            help="Overwrite preprocessed files")

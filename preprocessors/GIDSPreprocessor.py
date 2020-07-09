@@ -11,13 +11,12 @@ from .AbstractPreprocessor import AbstractPreprocessor
 
 class GIDSPreprocessor(AbstractPreprocessor):
     PROCESSED_FILE_NAME = 'gids'
+    DATASET_NAME = 'GIDS'
     RAW_TRAIN_FILE_NAME = os.path.join(RAW_DATA_DIR, 'gids_data/gids_train.json')
     RAW_VAL_FILE_NAME = os.path.join(RAW_DATA_DIR, 'gids_data/gids_dev.json')
     RAW_TEST_FILE_NAME = os.path.join(RAW_DATA_DIR, 'gids_data/gids_test.json')
 
-    def preprocess_data(self):
-        print("\n---> Preprocessing GIDS dataset <---")
-
+    def _preprocess_data(self):
         print("Processing train data")
         train_x, train_y = self._get_data_from_file(self.RAW_TRAIN_FILE_NAME)
         print("Processing validate data")

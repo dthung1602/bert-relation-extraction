@@ -17,12 +17,32 @@ class AbstractPreprocessor(ABC):
     PAD_CHAR = 0
     SENTENCE_LENGTH = 512
     PROCESSED_FILE_NAME = ''
+    DATASET_NAME = ''
 
     def __init__(self, tokenizer: PreTrainedTokenizer):
         self.tokenizer = tokenizer
 
+    def preprocess_data(self, reprocess: bool):
+        print(f"\n---> Preprocessing {self.DATASET_NAME} dataset <---")
+
+        # stop preprocessing if file existed
+        pickled_file_names = [self.__get_pickle_file_name(k) for k in ('train', 'val', 'test')]
+        existed_files = [fn for fn in pickled_file_names if os.path.exists(fn)]
+        if existed_files:
+            file_text = "- " + "\n- ".join(existed_files)
+            if not reprocess:
+                print("The following files already exist:")
+                print(file_text)
+                print("Preprocessing is skipped. See option --reprocess.")
+                return
+            else:
+                print("The following files will be overwritten:")
+                print(file_text)
+
+        self._preprocess_data()
+
     @abstractmethod
-    def preprocess_data(self):
+    def _preprocess_data(self):
         pass
 
     def _pickle_data(self, train_x, train_y, val_x, val_y, test_x, test_y):
@@ -36,7 +56,7 @@ class AbstractPreprocessor(ABC):
                 'x': lc[f'{key}_x'],
                 'y': lc[f'{key}_y'],
             }
-            file_name = os.path.join(DATA_DIR, f'{self.PROCESSED_FILE_NAME}_{key}.pkl')
+            file_name = self.__get_pickle_file_name(key)
 
             print(f"Saving to pickle file {file_name}")
             with open(file_name, 'wb') as f:
@@ -47,3 +67,6 @@ class AbstractPreprocessor(ABC):
             return np.array(sequence[:self.SENTENCE_LENGTH])
         else:
             return np.array(sequence + [self.PAD_CHAR] * (self.SENTENCE_LENGTH - len(sequence)))
+
+    def __get_pickle_file_name(self, key: str):
+        return os.path.join(DATA_DIR, f'{self.PROCESSED_FILE_NAME}_{key}.pkl')

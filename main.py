@@ -23,4 +23,4 @@ if __name__ == '__main__':
     elif args.command == 'preprocess':
         preprocessor_factory = PreprocessorFactory()
         preprocessor = preprocessor_factory.get_preprocessor(args.dataset, args.pretrain_weight)
-        preprocessor.preprocess_data()
+        preprocessor.preprocess_data(args.reprocess)
