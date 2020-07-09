@@ -17,5 +17,5 @@ class DownloaderFactory:
         all_datasets = list(cls.MAPPING.keys())
         parser = subparser.add_parser('download')
         parser.add_argument("--datasets", type=str, default=all_datasets, nargs="*",
-                            choices=all_datasets, help="List of datasets to downloaders")
-        parser.add_argument("--force-redownload", default=False, action="store_true", help="Force re-downloaders")
+                            choices=all_datasets, help="List of datasets to download")
+        parser.add_argument("--force-redownload", default=False, action="store_true", help="Force re-download")

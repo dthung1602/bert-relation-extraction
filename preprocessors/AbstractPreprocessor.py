@@ -16,7 +16,6 @@ class AbstractPreprocessor(ABC):
     OBJ_END_CHAR = ']'
     PAD_CHAR = 0
     SENTENCE_LENGTH = 512
-    PROCESSED_FILE_NAME = ''
     DATASET_NAME = ''
 
     def __init__(self, tokenizer: PreTrainedTokenizer):
@@ -69,4 +68,4 @@ class AbstractPreprocessor(ABC):
             return np.array(sequence + [self.PAD_CHAR] * (self.SENTENCE_LENGTH - len(sequence)))
 
     def __get_pickle_file_name(self, key: str):
-        return os.path.join(DATA_DIR, f'{self.PROCESSED_FILE_NAME}_{key}.pkl')
+        return os.path.join(DATA_DIR, f'{self.DATASET_NAME.lower()}_{key}.pkl')

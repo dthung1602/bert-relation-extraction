@@ -10,7 +10,6 @@ from .AbstractPreprocessor import AbstractPreprocessor
 
 
 class GIDSPreprocessor(AbstractPreprocessor):
-    PROCESSED_FILE_NAME = 'gids'
     DATASET_NAME = 'GIDS'
     RAW_TRAIN_FILE_NAME = os.path.join(RAW_DATA_DIR, 'gids_data/gids_train.json')
     RAW_VAL_FILE_NAME = os.path.join(RAW_DATA_DIR, 'gids_data/gids_dev.json')
