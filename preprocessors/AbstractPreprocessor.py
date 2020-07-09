@@ -25,7 +25,7 @@ class AbstractPreprocessor(ABC):
         print(f"\n---> Preprocessing {self.DATASET_NAME} dataset <---")
 
         # stop preprocessing if file existed
-        pickled_file_names = [self.__get_pickle_file_name(k) for k in ('train', 'val', 'test')]
+        pickled_file_names = [self.get_pickle_file_name(k) for k in ('train', 'val', 'test')]
         existed_files = [fn for fn in pickled_file_names if os.path.exists(fn)]
         if existed_files:
             file_text = "- " + "\n- ".join(existed_files)
@@ -55,7 +55,7 @@ class AbstractPreprocessor(ABC):
                 'x': lc[f'{key}_x'],
                 'y': lc[f'{key}_y'],
             }
-            file_name = self.__get_pickle_file_name(key)
+            file_name = self.get_pickle_file_name(key)
 
             print(f"Saving to pickle file {file_name}")
             with open(file_name, 'wb') as f:
@@ -67,5 +67,6 @@ class AbstractPreprocessor(ABC):
         else:
             return np.array(sequence + [self.PAD_CHAR] * (self.SENTENCE_LENGTH - len(sequence)))
 
-    def __get_pickle_file_name(self, key: str):
-        return os.path.join(DATA_DIR, f'{self.DATASET_NAME.lower()}_{key}.pkl')
+    @classmethod
+    def get_pickle_file_name(cls, key: str):
+        return os.path.join(DATA_DIR, f'{cls.DATASET_NAME.lower()}_{key}.pkl')

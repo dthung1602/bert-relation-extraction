@@ -1,10 +1,27 @@
+import pickle
 from argparse import ArgumentParser, Namespace
 from typing import Union, List
 
 from pytorch_lightning import LightningModule
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 from preprocessors import PreprocessorFactory
+
+
+class GenericDataset(Dataset):
+
+    def __init__(self, dataset: str, data_type: str):
+        preprocessor_class = PreprocessorFactory.DATASET_MAPPING[dataset]
+        if data_type not in ['train', 'val', 'test']:
+            raise ValueError('data_type must be train, val or test')
+        with open(preprocessor_class.get_pickle_file_name(data_type), 'rb') as f:
+            self.data = pickle.load(f)
+
+    def __getitem__(self, index: int):
+        return self.data['x'][index], self.data['y'][index]
+
+    def __len__(self) -> int:
+        return len(self.data['x'])
 
 
 class BERTModule(LightningModule):
@@ -33,13 +50,19 @@ class BERTModule(LightningModule):
         pass
 
     def train_dataloader(self) -> DataLoader:
-        pass
+        return self.__get_dataloader('train')
 
     def val_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
-        pass
+        return self.__get_dataloader('val')
 
     def test_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
-        pass
+        return self.__get_dataloader('test')
+
+    def __get_dataloader(self, data_type):
+        return DataLoader(
+            GenericDataset(self.hparams.dataset, data_type),
+            batch_size=self.hparams.batch_size
+        )
 
     def forward(self, *args, **kwargs):
         pass
