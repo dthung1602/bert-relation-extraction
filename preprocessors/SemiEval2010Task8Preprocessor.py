@@ -1,6 +1,5 @@
 import os
 
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
@@ -22,42 +21,52 @@ class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
 
     def _preprocess_data(self):
         print("Processing training data")
-        train_x, train_y = self._get_data_from_file(
+        train_input_index, train_attention, train_label = self._get_data_from_file(
             self.RAW_TRAIN_FILE_NAME,
             self.RAW_TRAIN_DATA_SIZE
         )
 
         print("Processing test data")
-        test_x, test_y = self._get_data_from_file(
+        test_input_index, test_attention, test_label = self._get_data_from_file(
             self.RAW_TEST_FILE_NAME,
             self.RAW_TEST_DATA_SIZE
         )
 
         print("Encoding labels to integers")
         le = LabelEncoder()
-        le.fit(train_y)
-        train_y = le.transform(train_y)
-        test_y = le.transform(test_y)
+        le.fit(train_label)
+        train_label = le.transform(train_label).tolist()
+        test_label = le.transform(test_label).tolist()
 
         print("Splitting train & validate data")
-        train_x, val_x, train_y, val_y = train_test_split(
-            train_x, train_y,
+        train_input_index, val_input_index, train_attention, val_attention, train_label, val_label = train_test_split(
+            train_input_index, train_attention, train_label,
             test_size=self.VAL_DATA_PROPORTION,
             random_state=self.RANDOM_SEED
         )
 
-        self._pickle_data(train_x, train_y, val_x, val_y, test_x, test_y)
+        lc = locals()
+        for k in ['train', 'val', 'test']:
+            file_name = self.get_pickle_file_name(k)
+            self._pickle_data({
+                'input_index': lc[f'{k}_input_index'],
+                'attention_mask': lc[f'{k}_attention'],
+                'label': lc[f'{k}_label']
+            }, file_name)
 
     def _get_data_from_file(self, file_name: str, dataset_size: int):
         sentences = []
+        attentions = []
         labels = []
         with open(file_name) as f:
             for _ in tqdm(range(dataset_size)):
-                sentences.append(self._process_sentence(f.readline()))
+                sentence = self._process_sentence(f.readline())
+                sentences.append(sentence)
+                attentions.append(self._get_attention_mask(sentence))
                 labels.append(self._process_label(f.readline()))
                 f.readline()
                 f.readline()
-        return np.array(sentences), np.array(labels)
+        return sentences, attentions, labels
 
     def _process_sentence(self, sentence: str):
         # TODO distinguish e1 e2 sub obj

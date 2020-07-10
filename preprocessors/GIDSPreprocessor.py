@@ -1,7 +1,6 @@
 import json
 import os
 
-import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -17,23 +16,31 @@ class GIDSPreprocessor(AbstractPreprocessor):
 
     def _preprocess_data(self):
         print("Processing train data")
-        train_x, train_y = self._get_data_from_file(self.RAW_TRAIN_FILE_NAME)
+        train_input_index, train_attention, train_label = self._get_data_from_file(self.RAW_TRAIN_FILE_NAME)
         print("Processing validate data")
-        val_x, val_y = self._get_data_from_file(self.RAW_VAL_FILE_NAME)
+        val_input_index, val_attention, val_label = self._get_data_from_file(self.RAW_VAL_FILE_NAME)
         print("Processing test data")
-        test_x, test_y = self._get_data_from_file(self.RAW_TEST_FILE_NAME)
+        test_input_index, test_attention, test_label = self._get_data_from_file(self.RAW_TEST_FILE_NAME)
 
         print("Encoding labels to integers")
         le = LabelEncoder()
-        le.fit(train_y)
-        train_y = le.transform(train_y)
-        val_y = le.transform(val_y)
-        test_y = le.transform(test_y)
+        le.fit(train_label)
+        train_label = le.transform(train_label).tolist()
+        val_label = le.transform(val_label).tolist()
+        test_label = le.transform(test_label).tolist()
 
-        self._pickle_data(train_x, train_y, val_x, val_y, test_x, test_y)
+        lc = locals()
+        for k in ['train', 'val', 'test']:
+            file_name = self.get_pickle_file_name(k)
+            self._pickle_data({
+                'input_index': lc[f'{k}_input_index'],
+                'attention_mask': lc[f'{k}_attention'],
+                'label': lc[f'{k}_label']
+            }, file_name)
 
     def _get_data_from_file(self, file_name: str):
         sentences = []
+        attentions = []
         labels = []
         with open(file_name) as f:
             for line in tqdm(f.readlines()):
@@ -47,8 +54,10 @@ class GIDSPreprocessor(AbstractPreprocessor):
 
                 # tokenize sentence
                 sequence = self.tokenizer.encode(sentence)
-                sentences.append(self._pad_sequence(sequence))
+                sequence = self._pad_sequence(sequence)
 
+                sentences.append(sequence)
+                attentions.append(self._get_attention_mask(sequence))
                 labels.append(data['rel'])
 
-        return np.array(sentences), np.array(labels)
+        return sentences, attentions, labels

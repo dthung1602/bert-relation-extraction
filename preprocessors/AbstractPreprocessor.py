@@ -2,7 +2,6 @@ import os
 import pickle
 from abc import ABC, abstractmethod
 
-import numpy as np
 from transformers import PreTrainedTokenizer
 
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__)) if __file__ != '<input>' else '.'
@@ -44,28 +43,23 @@ class AbstractPreprocessor(ABC):
     def _preprocess_data(self):
         pass
 
-    def _pickle_data(self, train_x, train_y, val_x, val_y, test_x, test_y):
+    def _pickle_data(self, data, file_name):
         if not os.path.exists(DATA_DIR):
             print("Creating directory " + DATA_DIR)
             os.mkdir(DATA_DIR)
 
-        lc = locals()
-        for key in ['train', 'val', 'test']:
-            data = {
-                'x': lc[f'{key}_x'],
-                'y': lc[f'{key}_y'],
-            }
-            file_name = self.get_pickle_file_name(key)
-
-            print(f"Saving to pickle file {file_name}")
-            with open(file_name, 'wb') as f:
-                pickle.dump(data, f)
+        print(f"Saving to pickle file {file_name}")
+        with open(file_name, 'wb') as f:
+            pickle.dump(data, f)
 
     def _pad_sequence(self, sequence: list):
         if len(sequence) > self.SENTENCE_LENGTH:
-            return np.array(sequence[:self.SENTENCE_LENGTH])
+            return sequence[:self.SENTENCE_LENGTH]
         else:
-            return np.array(sequence + [self.PAD_CHAR] * (self.SENTENCE_LENGTH - len(sequence)))
+            return sequence + [self.PAD_CHAR] * (self.SENTENCE_LENGTH - len(sequence))
+
+    def _get_attention_mask(self, sequence: list):
+        return [0 if i == self.PAD_CHAR else 1 for i in sequence]
 
     @classmethod
     def get_pickle_file_name(cls, key: str):
