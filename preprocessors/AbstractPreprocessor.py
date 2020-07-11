@@ -46,7 +46,7 @@ class AbstractPreprocessor(ABC):
     def _pickle_data(self, data, file_name):
         if not os.path.exists(DATA_DIR):
             print("Creating directory " + DATA_DIR)
-            os.mkdir(DATA_DIR)
+            os.makedirs(DATA_DIR)
 
         print(f"Saving to pickle file {file_name}")
         with open(file_name, 'wb') as f:

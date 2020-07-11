@@ -4,7 +4,7 @@ from typing import Tuple
 
 import torch
 from pytorch_lightning import LightningModule
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score
 from torch import Tensor, nn
 from torch.nn import functional as F
 from torch.optim import AdamW
@@ -105,19 +105,19 @@ class BERTModule(LightningModule):
             eps=1e-08
         )
 
-    def forward(self, input_ids, attention_mask) -> Tuple[Tensor, Tensor]:
-        bert_output, _, attn = self.bert(
+    def forward(self, input_ids, attention_mask) -> Tensor:
+        bert_output, _ = self.bert(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
         bert_cls = bert_output[:, 0]
         logits = self.linear(bert_cls)
-        return logits, attn
+        return logits
 
     def training_step(self, batch, batch_nb) -> dict:
         input_ids, attention_mask, label = batch
 
-        y_hat, attn = self(input_ids, attention_mask)
+        y_hat = self(input_ids, attention_mask)
 
         loss = F.cross_entropy(y_hat, label)
         tensorboard_logs = {'train_loss': loss}
@@ -127,15 +127,15 @@ class BERTModule(LightningModule):
     def validation_step(self, batch, batch_nb) -> dict:
         input_ids, attention_mask, label = batch
 
-        y_hat, attn = self(input_ids, attention_mask)
+        y_hat = self(input_ids, attention_mask)
 
         loss = F.cross_entropy(y_hat, label)
 
         a, y_hat = torch.max(y_hat, dim=1)
-        val_acc = accuracy_score(y_hat.cpu(), label.cpu())
-        val_acc = torch.tensor(val_acc)
+        val_acc = torch.tensor(accuracy_score(y_hat.cpu(), label.cpu()))
+        val_f1 = torch.tensor(f1_score(y_hat.cpu(), label.cpu()))
 
-        return {'val_loss': loss, 'val_acc': val_acc}
+        return {'val_loss': loss, 'val_acc': val_acc, 'val_f1': val_f1}
 
     def validation_epoch_end(self, outputs) -> dict:
         avg_val_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
@@ -147,12 +147,22 @@ class BERTModule(LightningModule):
     def test_step(self, batch, batch_nb) -> dict:
         input_ids, attention_mask, label = batch
 
-        y_hat, attn = self(input_ids, attention_mask)
+        y_hat = self(input_ids, attention_mask)
 
         a, y_hat = torch.max(y_hat, dim=1)
-        test_acc = accuracy_score(y_hat.cpu(), label.cpu())
+        y_hat = y_hat.cpu()
+        label = label.cpu()
+        test_acc = accuracy_score(y_hat, label)  # TODO check
+        test_f1 = f1_score(y_hat, label)
+        test_pre = precision_score(y_hat, label)
+        test_recall = recall_score(y_hat, label)
 
-        return {'test_acc': torch.tensor(test_acc)}
+        return {
+            'test_acc': torch.tensor(test_acc),
+            'test_f1': torch.tensor(test_f1),
+            'test_pre': torch.tensor(test_pre),
+            'test_recall': torch.tensor(test_recall),
+        }
 
     def test_epoch_end(self, outputs) -> dict:
         avg_test_acc = torch.stack([x['test_acc'] for x in outputs]).mean()

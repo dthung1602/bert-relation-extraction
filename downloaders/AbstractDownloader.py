@@ -16,7 +16,7 @@ class AbstractDownloader(ABC):
 
         if not os.path.exists(RAW_DATA_DIR):
             print("Creating raw data directory " + RAW_DATA_DIR)
-            os.mkdir(RAW_DATA_DIR)
+            os.makedirs(RAW_DATA_DIR)
 
         # check data has been downloaded
         if os.path.exists(self.DATASET_DIR):

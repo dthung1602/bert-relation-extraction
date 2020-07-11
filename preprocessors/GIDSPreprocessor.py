@@ -2,7 +2,7 @@ import json
 import os
 
 from sklearn.preprocessing import LabelEncoder
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from downloaders import RAW_DATA_DIR
 from .AbstractPreprocessor import AbstractPreprocessor
