@@ -21,13 +21,13 @@ class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
 
     def _preprocess_data(self):
         print("Processing training data")
-        train_input_index, train_attention, train_label = self._get_data_from_file(
+        train_input_ids, train_attention, train_label = self._get_data_from_file(
             self.RAW_TRAIN_FILE_NAME,
             self.RAW_TRAIN_DATA_SIZE
         )
 
         print("Processing test data")
-        test_input_index, test_attention, test_label = self._get_data_from_file(
+        test_input_ids, test_attention, test_label = self._get_data_from_file(
             self.RAW_TEST_FILE_NAME,
             self.RAW_TEST_DATA_SIZE
         )
@@ -39,8 +39,8 @@ class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
         test_label = le.transform(test_label).tolist()
 
         print("Splitting train & validate data")
-        train_input_index, val_input_index, train_attention, val_attention, train_label, val_label = train_test_split(
-            train_input_index, train_attention, train_label,
+        train_input_ids, val_input_ids, train_attention, val_attention, train_label, val_label = train_test_split(
+            train_input_ids, train_attention, train_label,
             test_size=self.VAL_DATA_PROPORTION,
             random_state=self.RANDOM_SEED
         )
@@ -49,7 +49,7 @@ class SemiEval2010Task8Preprocessor(AbstractPreprocessor):
         for k in ['train', 'val', 'test']:
             file_name = self.get_pickle_file_name(k)
             self._pickle_data({
-                'input_index': lc[f'{k}_input_index'],
+                'input_ids': lc[f'{k}_input_ids'],
                 'attention_mask': lc[f'{k}_attention'],
                 'label': lc[f'{k}_label']
             }, file_name)

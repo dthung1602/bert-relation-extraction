@@ -16,11 +16,11 @@ class GIDSPreprocessor(AbstractPreprocessor):
 
     def _preprocess_data(self):
         print("Processing train data")
-        train_input_index, train_attention, train_label = self._get_data_from_file(self.RAW_TRAIN_FILE_NAME)
+        train_input_ids, train_attention, train_label = self._get_data_from_file(self.RAW_TRAIN_FILE_NAME)
         print("Processing validate data")
-        val_input_index, val_attention, val_label = self._get_data_from_file(self.RAW_VAL_FILE_NAME)
+        val_input_ids, val_attention, val_label = self._get_data_from_file(self.RAW_VAL_FILE_NAME)
         print("Processing test data")
-        test_input_index, test_attention, test_label = self._get_data_from_file(self.RAW_TEST_FILE_NAME)
+        test_input_ids, test_attention, test_label = self._get_data_from_file(self.RAW_TEST_FILE_NAME)
 
         print("Encoding labels to integers")
         le = LabelEncoder()
@@ -33,7 +33,7 @@ class GIDSPreprocessor(AbstractPreprocessor):
         for k in ['train', 'val', 'test']:
             file_name = self.get_pickle_file_name(k)
             self._pickle_data({
-                'input_index': lc[f'{k}_input_index'],
+                'input_ids': lc[f'{k}_input_ids'],
                 'attention_mask': lc[f'{k}_attention'],
                 'label': lc[f'{k}_label']
             }, file_name)
