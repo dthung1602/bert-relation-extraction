@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser
-
+import os
 from pytorch_lightning import Trainer
 
 from downloaders import DownloaderFactory
@@ -35,6 +35,14 @@ if __name__ == '__main__':
         trainer = Trainer(
             gpus=args.gpus,
             min_epochs=args.min_epochs,
-            max_epochs=args.max_epochs
+            max_epochs=args.max_epochs,
+            default_root_dir=args.checkpoint_dir,
         )
         trainer.fit(model)
+
+    elif args.command == 'test':
+        model = BERTModule.load_from_checkpoint(args.checkpoint, hparams=args)
+        trainer = Trainer(
+            gpus=args.gpus,
+        )
+        trainer.test(model)
