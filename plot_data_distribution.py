@@ -38,7 +38,7 @@ def visualize_distribution(dataset_name):
         fig, ax = plt.subplots(figsize=(10, 10))
         fig.autofmt_xdate(rotation=45)
         figs.append(fig)
-        ax.title.set_text(f"{dataset_name} {subset} dataset label distribution")
+        # ax.title.set_text(f"{dataset_name} {subset} dataset label distribution")
         ax.bar(sorted_labels, sorted_values)
         ax.set_ylabel("sentences")
         ax_right = ax.twinx()
@@ -49,7 +49,7 @@ def visualize_distribution(dataset_name):
 
 
 if __name__ == '__main__':
-    figs = visualize_distribution("SemEval2010Task8")
-    # figs = visualize_distribution("GIDS")
+    # figs = visualize_distribution("SemEval2010Task8")
+    figs = visualize_distribution("GIDS")
     for fig in figs:
         fig.show()
