@@ -1,4 +1,4 @@
-data/
+data/processed
 .idea/
 lightning_logs/
 
